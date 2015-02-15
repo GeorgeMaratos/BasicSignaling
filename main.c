@@ -8,7 +8,7 @@
 
 #define DEBUG 1
 
-int exitValue = 0;
+int exitVal = 0;
 int globalIncrement;
 int childPid = -1;
 int offset = 0;
@@ -31,7 +31,7 @@ keyboardInterruptHandler(int sig)
   switch (input) {
   case 'a':
     printf("Exiting Now\n");
-    exitValue++;
+    exitVal++;
     return;
   case 'b':
     if (DEBUG) fprintf(stdout,"Case b\n");
@@ -49,11 +49,11 @@ keyboardInterruptHandler(int sig)
     fprintf(stdout,"Creating Child\n");
     childPid = fork();
     parentPid = getpgrp();
-    execlp("myChild.o",id,parentPid,NULL);
+    execlp("childProcess.o","5",id,parentPid,NULL);
     break;
   default:
     fprintf(stdout,"Input not recognized\n");
-    keyboardInterrupHander(sig);
+    keyboardInterruptHandler(sig);
     return;
   }
 }
@@ -108,7 +108,7 @@ main(int argc,char **argv)
   int globalIncrement;
   short numbers[6];
   char words[6];
-  char name = "SignalName";
+  char *name = "SignalName";
   int *pointer;
   //ops
   if (argc != 2) {
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   globalIncrement = 0;
   signal(2,keyboardInterruptHandler);
   signal(8,faultHandler);
-  signal(11,faultHander);
-  signal(10,childSignalHandler):
+  signal(11,faultHandler);
+  signal(10,childSignalHandler);
   signal(12,childSignalHandler);
   signal(17,childSignalHandler);
   globalIncrement++;
@@ -134,7 +134,7 @@ main(int argc,char **argv)
     if (exitVal)
       return 0;
     fprintf(stderr,"words[%d] = 0x%x = %d = %c  ",localCounter,words[localCounter],words[localCounter],words[localCounter]);
-    fprintf(stderr,"1.0/%d = %f\n",(words[localCounter]+offset),1/(words[localCounter]+offset));
+    fprintf(stderr,"1.0/%d = %f\n",(words[localCounter]+offset),(float)(1/(words[localCounter]+offset)));
     offset = 0;
     localCounter += globalIncrement;
     sigsetjmp(buf2,3);
